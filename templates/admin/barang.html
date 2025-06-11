@@ -1,0 +1,403 @@
+{% extends 'admin/layout.html' %} {% block content %}
+<style>
+  /* Variabel untuk Warna dan Transparansi - Konsisten dengan Login/Register, Contact, & Dashboard */
+  :root {
+    --card-base-color: 255, 255, 255; /* Untuk background RGBA card */
+    --card-alpha: 0.1; /* Transparansi card (10%) */
+    --card-border-color: rgba(255, 255, 255, 0.2); /* Border card transparan */
+    --card-shadow-color: rgba(0, 0, 0, 0.4); /* Shadow card */
+    --input-bg-alpha: 0.05; /* Transparansi input field (jika ada input di halaman ini) */
+    --input-border-color: rgba(255, 255, 255, 0.1);
+    --text-light: #f8f9fa; /* Teks putih */
+    --text-muted: #adb5bd; /* Teks abu-abu untuk placeholder/sekunder */
+    --accent-color: #7b2cff; /* Ungu cerah untuk aksen */
+    --btn-primary-bg: #6900ff; /* Warna tombol utama */
+    --btn-primary-hover-bg: #8a2be2; /* Warna tombol hover */
+    --icon-color: #a879ff; /* Warna untuk ikon (jika ada) */
+    --blur-amount: 15px; /* Jumlah blur */
+    --saturation-amount: 180%; /* Saturasi untuk efek kaca */
+
+    /* Variabel tambahan spesifik untuk tabel */
+    --table-bg: rgba(
+      var(--card-base-color),
+      0.05
+    ); /* Background tabel sedikit lebih transparan */
+    --table-header-bg: rgba(
+      var(--card-base-color),
+      0.15
+    ); /* Background header tabel */
+    --table-border-color: rgba(
+      255,
+      255,
+      255,
+      0.25
+    ); /* Border tabel yang lebih solid */
+    --table-row-hover-bg: rgba(
+      var(--card-base-color),
+      0.07
+    ); /* Background row saat di-hover */
+
+    /* Warna tombol aksi */
+    --btn-warning-bg: #ffc107; /* Kuning Bootstrap default */
+    --btn-warning-hover-bg: #e0a800;
+    --btn-danger-bg: #dc3545; /* Merah Bootstrap default */
+    --btn-danger-hover-bg: #c82333;
+  }
+
+  body {
+    /* Menggunakan background gambar yang sama */
+    background: url("https://i.pinimg.com/736x/65/65/48/6565488b7b3db6985c6981f6898ec42f.jpg")
+      no-repeat center center fixed;
+    background-size: cover;
+    color: var(--text-light); /* Teks default putih */
+    min-height: 100vh;
+    margin: 0;
+    /* overflow-x: hidden; <-- Dihapus karena sudah diatur di layout.html untuk mobile/desktop */
+    position: relative;
+  }
+
+  body::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4); /* Overlay gelap transparan */
+    z-index: -1;
+  }
+
+  .container {
+    padding-top: 40px;
+    padding-bottom: 40px;
+  }
+
+  h2 {
+    color: var(--text-light);
+    font-weight: 700;
+    text-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+    margin-bottom: 30px;
+    text-align: center; /* Rata tengah judul */
+  }
+
+  /* Styling tombol Tambah Barang */
+  .btn-primary {
+    background-color: var(--btn-primary-bg) !important;
+    border-color: var(--btn-primary-bg) !important;
+    color: var(--text-light) !important;
+    font-weight: 600;
+    padding: 0.8rem 1.5rem !important;
+    border-radius: 8px !important;
+    transition: background-color 0.3s ease, transform 0.2s ease,
+      box-shadow 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  }
+
+  .btn-primary:hover {
+    background-color: var(--btn-primary-hover-bg) !important;
+    border-color: var(--btn-primary-hover-bg) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+  }
+
+  /* Styling untuk container tabel (agar ada efek glassmorphism di belakang tabel) */
+  .table-responsive-wrapper {
+    /* Kita bungkus tabel di dalam div ini untuk menerapkan glassmorphism */
+    background-color: rgba(
+      var(--card-base-color),
+      var(--card-alpha)
+    ) !important;
+    border: 1px solid var(--card-border-color) !important;
+    border-radius: 15px !important;
+    box-shadow: 0 8px 32px 0 var(--card-shadow-color) !important;
+    backdrop-filter: blur(15px) saturate(200%) !important;
+    -webkit-backdrop-filter: blur(15px) saturate(200%) !important;
+    overflow-x: auto; /* Agar tabel tetap responsif dan bisa discroll horizontal */
+    padding: 20px; /* Padding di dalam wrapper */
+  }
+
+  /* Styling Tabel */
+  .table {
+    width: 100%;
+    min-width: 768px; /* Atur lebar minimum tabel agar bisa di-scroll di mobile jika kontennya lebar */
+    margin-bottom: 0 !important; /* Hapus margin bawah default Bootstrap */
+    color: var(--text-light);
+    border-collapse: separate; /* Penting untuk border-radius di tbody */
+    border-spacing: 0; /* Penting untuk border-radius di tbody */
+  }
+
+  .table thead th {
+    background-color: var(--table-header-bg) !important;
+    color: var(--text-light);
+    border-color: var(--table-border-color) !important;
+    vertical-align: middle; /* Rata tengah vertikal */
+    padding: 12px 15px; /* Padding yang nyaman */
+    font-weight: 600;
+  }
+
+  /* Border radius untuk header tabel */
+  .table thead tr th:first-child {
+    border-top-left-radius: 10px; /* Sesuaikan dengan radius wrapper */
+  }
+  .table thead tr th:last-child {
+    border-top-right-radius: 10px; /* Sesuaikan dengan radius wrapper */
+  }
+
+  .table tbody td {
+    background-color: var(
+      --table-bg
+    ) !important; /* Background body tabel transparan */
+    color: var(--text-light);
+    border-color: var(--table-border-color) !important;
+    vertical-align: middle;
+    padding: 10px 15px;
+    text-align: center;
+  }
+
+  .table-striped tbody tr:nth-of-type(odd) td {
+    background-color: rgba(
+      var(--card-base-color),
+      0.03
+    ) !important; /* Sedikit lebih gelap untuk striping */
+  }
+
+  .table tbody tr:hover td {
+    background-color: var(
+      --table-row-hover-bg
+    ) !important; /* Efek hover pada baris */
+  }
+
+  /* Styling tombol aksi di dalam tabel */
+  .table .btn-sm {
+    padding: 0.3rem 0.7rem;
+    font-size: 0.85rem;
+    border-radius: 5px;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  }
+
+  .table .btn-warning {
+    background-color: var(--btn-warning-bg) !important;
+    border-color: var(--btn-warning-bg) !important;
+    color: #333 !important; /* Teks gelap agar kontras dengan kuning */
+  }
+  .table .btn-warning:hover {
+    background-color: var(--btn-warning-hover-bg) !important;
+    border-color: var(--btn-warning-hover-bg) !important;
+    transform: translateY(-1px);
+  }
+
+  .table .btn-danger {
+    background-color: var(--btn-danger-bg) !important;
+    border-color: var(--btn-danger-bg) !important;
+    color: var(--text-light) !important; /* Teks putih */
+  }
+  .table .btn-danger:hover {
+    background-color: var(--btn-danger-hover-bg) !important;
+    border-color: var(--btn-danger-hover-bg) !important;
+    transform: translateY(-1px);
+  }
+
+  /* Menyesuaikan jarak antar tombol aksi */
+  .table td a.btn,
+  .table td form button.btn {
+    margin-right: 5px;
+  }
+  .table td form:last-child button.btn {
+    margin-right: 0;
+  }
+
+  /* Media Queries untuk scrollbar horizontal khusus mobile */
+  @media (max-width: 767px) {
+    /* Pastikan gambar tidak terlalu besar di mobile */
+    .table tbody img {
+      max-width: 50px;
+      height: auto;
+    }
+  }
+  /* --- STYLING BARU UNTUK DESKRIPSI (READ MORE) --- */
+  .description-cell {
+    text-align: left; /* Rata kiri teks dalam sel */
+    max-width: 300px; /* Sesuaikan sesuai kebutuhan */
+    word-wrap: break-word; /* Kompatibilitas lama */
+    overflow-wrap: break-word; /* Rekomendasi baru */
+  }
+
+  .description-cell .read-more-btn {
+    background: none;
+    border: none;
+    color: var(--accent-color); /* Atau warna lain yang Anda inginkan */
+    cursor: pointer;
+    text-decoration: underline;
+    padding: 0;
+    font-size: inherit; /* Agar ukuran font sama dengan teks sekitar */
+  }
+  .description-cell .read-more-btn:hover {
+    text-decoration: none;
+    color: var(--btn-primary-hover-bg); /* Sedikit lebih gelap saat hover */
+  }
+
+  /* Styling modal glassmorphism */
+  .modal-content {
+    background-color: rgba(
+      var(--card-base-color),
+      var(--card-alpha)
+    ); /* Pastikan variabel sudah didefinisikan */
+    border: 1px solid var(--card-border-color); /* Pastikan variabel sudah didefinisikan */
+    border-radius: 15px;
+    backdrop-filter: blur(var(--blur-amount)) saturate(var(--saturation-amount));
+    -webkit-backdrop-filter: blur(var(--blur-amount))
+      saturate(var(--saturation-amount));
+    box-shadow: 0 8px 32px 0 var(--card-shadow-color);
+    color: var(--text-light);
+  }
+
+  .modal-header {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2); /* Sesuaikan border */
+    color: var(--text-light);
+  }
+
+  .modal-header .btn-close {
+    filter: invert(1) grayscale(100%) brightness(200%); /* Warna putih untuk tombol close */
+  }
+
+  .modal-body {
+    color: var(--text-light);
+    white-space: pre-wrap; /* Penting untuk mempertahankan baris baru dan spasi di deskripsi */
+    word-break: break-word; /* Memecah kata jika terlalu panjang */
+  }
+
+  .modal-footer {
+    border-top: 1px solid rgba(255, 255, 255, 0.2); /* Sesuaikan border */
+  }
+</style>
+
+<div class="container">
+  <h2 class="mb-4">Data Barang</h2>
+
+  <a class="btn btn-primary mb-3" href="/admin/form-tambah-barang"
+    >+ Tambah Barang</a
+  >
+
+  >
+
+  <div class="table-responsive-wrapper">
+    <table class="table table-bordered table-striped">
+      <thead class="table-dark">
+        <tr>
+          <th>ID</th>
+          <th>Nama Barang</th>
+          <th>Harga</th>
+          <th>Stok</th>
+          <th>Kategori</th>
+          <th>Deskripsi</th>
+          <th>Link produk</th>
+          <th>Aksi</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for isi in hasil %}
+        <tr>
+          <td>{{loop.index}}</td>
+          <td>{{isi['nama']}}</td>
+          <td>Rp{{isi['harga_formatted']}}</td>
+          <td>{{isi['stok']}}</td>
+          <td>{{isi['kategori']}}</td>
+          <td class="description-cell">
+            {{ isi['short_description'] }} {% if isi['show_read_more'] %}
+            <button
+              type="button"
+              class="read-more-btn"
+              data-bs-toggle="modal"
+              data-bs-target="#descriptionModal"
+              data-full-description="{{ isi['full_description'] }}"
+              data-item-name="{{ isi['nama'] }}"
+            >
+              Baca Selengkapnya
+            </button>
+            {% endif %}
+          </td>
+
+          <td>
+            <img src="{{isi['gambar_url'] if isi['gambar_url'] else
+            'https://via.placeholder.com/200/cccccc/ffffff?text=No+Image'}}" {#
+            Menggunakan isi['gambar_url'] dan default #} alt="Gambar Barang"
+            style="width: 85px; height: 85px; object-fit: cover" />
+          </td>
+          <td>
+            <a
+              href="/admin/form-edit-barang//{{isi['id']}}"
+              class="btn btn-sm btn-warning"
+              >Edit</a
+            >
+            <form
+              action="/admin/hapus-barang//{{isi['id']}}"
+              method="POST"
+              style="display: inline"
+              onsubmit="return confirm('Yakin ingin menghapus barang ini?');"
+            >
+              <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
+            </form>
+          </td>
+        </tr>
+        {%endfor%}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div
+  class="modal fade"
+  id="descriptionModal"
+  tabindex="-1"
+  aria-labelledby="descriptionModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="descriptionModalLabel">
+          Deskripsi Barang: <span id="modalItemName"></span>
+        </h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body" id="modalDescriptionBody"></div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Tutup
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+{# Script untuk mengisi modal deskripsi, harus di dalam block content atau
+setelah modal #}
+<script>
+  document
+    .getElementById("descriptionModal")
+    .addEventListener("show.bs.modal", function (event) {
+      // Tombol yang memicu modal
+      const button = event.relatedTarget;
+
+      // Ambil data dari atribut data-*
+      const fullDescription = button.getAttribute("data-full-description");
+      const itemName = button.getAttribute("data-item-name");
+
+      // Update konten modal
+      const modalTitleSpan = this.querySelector("#modalItemName");
+      const modalBodyDiv = this.querySelector("#modalDescriptionBody");
+
+      if (modalTitleSpan) {
+        modalTitleSpan.textContent = itemName;
+      }
+      if (modalBodyDiv) {
+        modalBodyDiv.textContent = fullDescription; // Menggunakan textContent agar baris baru dari Python tetap terlihat
+      }
+    });
+</script>
+{%endblock%}
