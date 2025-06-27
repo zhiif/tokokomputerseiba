@@ -3,20 +3,96 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Halaman Saya</title>
-    <link rel="stylesheet" href="static/user.css" />
+    <title>Checkout Berhasil</title>
+    <link rel="stylesheet" href="/static/user.css" />
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
     />
+    <style>
+      .success-card {
+        max-width: 600px;
+        margin: auto;
+        padding: 2rem;
+        border-radius: 15px;
+        background-color: rgba(
+          var(--base-card-rgb),
+          var(--alpha-low)
+        ) !important;
+        color: var(--text-light) !important;
+        border: 1px solid rgba(var(--base-light-blue-rgb), var(--alpha-medium)) !important;
+        backdrop-filter: blur(var(--blur-amount))
+          saturate(var(--saturation-amount)) !important;
+        -webkit-backdrop-filter: blur(var(--blur-amount))
+          saturate(var(--saturation-amount)) !important;
+        box-shadow: 0 8px 32px 0 var(--card-shadow) !important;
+        animation: fadeIn 1s ease-in-out;
+      }
+
+      .success-icon {
+        font-size: 4rem;
+        color: #28a745;
+        margin-bottom: 1rem;
+        animation: rotateIn 0.7s ease-in-out;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes pop {
+        0% {
+          transform: scale(0.6);
+          opacity: 0;
+        }
+        100% {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+
+      @keyframes rotateIn {
+        0% {
+          opacity: 0;
+          transform: rotate(-180deg) scale(0.2);
+        }
+        100% {
+          opacity: 1;
+          transform: rotate(0deg) scale(1);
+        }
+      }
+
+      .btn-primary {
+        transition: background-color 0.3s ease, transform 0.2s ease;
+      }
+
+      .btn-primary:hover {
+        background-color: #0056b3;
+        transform: translateY(-2px);
+      }
+    </style>
   </head>
   <body>
     <div class="container mt-5 py-5">
-      <h2 class="text-success mb-4 text-center">Checkout Berhasil!</h2>
-      <p class="lead text-center">Terima kasih telah berbelanja dengan kami.</p>
-
-      <div class="text-center mt-4">
-        <a href="/" class="btn btn-primary">Kembali ke Beranda</a>
+      <div class="success-card text-center">
+        <div class="success-icon">
+          <i class="fas fa-check-circle"></i>
+        </div>
+        <h2 class="text-success mb-3">Checkout Berhasil!</h2>
+        <p class="lead mb-4">
+          Terima kasih telah berbelanja dengan kami. Pesanan Anda sedang
+          diproses.
+        </p>
+        <a href="/" class="btn btn-primary">
+          <i class="fas fa-home mr-2"></i>Kembali ke Beranda
+        </a>
       </div>
     </div>
     {% endblock %}

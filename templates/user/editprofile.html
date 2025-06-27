@@ -1,0 +1,359 @@
+{% extends 'user/layout.html' %} {% block isi %}
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Edit Profil</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+
+    <style>
+      body {
+        font-family: "Poppins", sans-serif;
+        background-image: url("https://i.pinimg.com/736x/0b/07/2f/0b072f4315c08b61b855d2557d559100.jpg");
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        color: white;
+        margin: 0;
+        padding: 40px;
+      }
+
+      .edit-container {
+        background-color: rgba(0, 0, 0, 0.6);
+        padding: 30px;
+        border-radius: 15px;
+        max-width: 600px;
+        margin: 0 auto;
+        backdrop-filter: blur(6px);
+        text-align: center;
+      }
+
+      h2 {
+        margin-bottom: 20px;
+      }
+
+      .profile-image-wrapper {
+        position: relative;
+        display: inline-block;
+        margin-bottom: 10px;
+      }
+
+      .profile-image-circle {
+        width: 120px;
+        height: 120px;
+        object-fit: cover;
+        border-radius: 50%;
+        border: 3px solid white;
+      }
+
+      .edit-icon {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        background-color: #000000;
+        border-radius: 50%;
+        padding: 5px;
+        display: flex;
+        cursor: pointer;
+        border: 1px solid white;
+        }
+
+        .edit-icon i {
+        font-size: 16px;
+        color: white;
+        }
+
+
+      .edit-link-input {
+        margin-top: 10px;
+        display: none;
+      }
+
+      label {
+        display: block;
+        margin-top: 15px;
+        font-weight: 500;
+        text-align: left;
+      }
+
+      input {
+        width: 100%;
+        padding: 10px;
+        border: none;
+        border-radius: 6px;
+        margin-top: 5px;
+        font-family: inherit;
+      }
+
+      input[readonly] {
+        background-color: #444;
+        color: #ccc;
+      }
+
+      input[type="submit"] {
+        background-color: #ff00cc;
+        color: white;
+        font-weight: bold;
+        cursor: pointer;
+        margin-top: 20px;
+      }
+
+      input[type="submit"]:hover {
+        background-color: #e600b3;
+      }
+
+      .back-link {
+        display: block;
+        text-align: center;
+        margin-top: 20px;
+        color: #ddd;
+        text-decoration: underline;
+      }
+    </style>
+
+    <script>
+      function toggleEditImage() {
+        const inputField = document.getElementById("edit-profile-image-input");
+        inputField.style.display = "block";
+        inputField.focus();
+      }
+
+      function hideInputOnBlur(event) {
+        const inputField = event.target;
+        if (inputField.value.trim() !== "") {
+          document.getElementById("profile-img").src = inputField.value;
+        }
+        inputField.style.display = "none";
+      }
+
+      function konfirmasiSimpan() {
+        return confirm("Apakah Anda yakin ingin menyimpan perubahan?");
+      }
+    </script>
+  </head>
+  <body>
+    <div class="edit-container">
+      <h2>Edit Profil</h2>
+
+      <!-- Foto profil & ikon edit -->
+      <div class="profile-image-wrapper">
+        <img
+          id="profile-img"
+          src="{{ profileuser.profile_image }}"
+          alt="Foto Profil"
+          class="profile-image-circle"
+        />
+        <div class="edit-icon" onclick="toggleEditImage()">
+          <i class="fa fa-pencil"></i>
+
+        </div>
+      </div>
+
+      <!-- Kolom input yang muncul tepat di bawah foto -->
+      <input
+        type="text"
+        id="edit-profile-image-input"
+        name="profile_image"
+        class="edit-link-input"
+        placeholder="Tempel link gambar baru & tekan Enter"
+        onblur="hideInputOnBlur(event)"
+        onkeydown="if(event.key==='Enter'){event.target.blur(); return false;}"
+        value="{{ profileuser.profile_image }}"
+      />
+
+      <form
+        method="POST"
+        action="/user/edit-profile-user"
+        onsubmit="return konfirmasiSimpan();"
+      >
+        <label for="id">ID User</label>
+        <input type="text" id="id" value="#{{ profileuser.id }}" readonly />
+
+        <label for="fullname">Nama Lengkap</label>
+        <input
+          type="text"
+          id="fullname"
+          name="fullname"
+          value="{{ profileuser.fullname }}"
+          required
+        />
+
+        <label for="username">Username</label>
+        <input
+          type="text"
+          id="username"
+          name="username"
+          value="{{ profileuser.username }}"
+          required
+        />
+
+        <label for="password">Password</label>
+        <input
+          type="text"
+          id="password"
+          name="password"
+          value="{{ profileuser.password }}"
+          required
+        />
+
+        <!-- Ini kolom tersembunyi untuk dikirim ke backend -->
+        <input
+          type="hidden"
+          id="profile_image"
+          name="profile_image"
+          value="{{ profileuser.profile_image }}"
+        />
+
+        <!-- Tombol diganti -->
+        <button
+          type="button"
+          onclick="bukaKonfirmasi()"
+          style="
+            background-color: #ff00cc;
+            color: white;
+            font-weight: bold;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            margin-top: 20px;
+          "
+        >
+          Simpan Perubahan
+        </button>
+      </form>
+
+      <!-- Modal konfirmasi DILETAKKAN DI SINI (di luar form) -->
+      <div id="modal-konfirmasi" class="modal">
+        <div class="modal-content animate">
+    <p>Apakah Anda yakin ingin menyimpan perubahan?</p>
+    <div class="modal-actions">
+  <button id="btn-simpan" onclick="submitForm()">Ya, Simpan</button>
+  <button onclick="tutupKonfirmasi()">Batal</button>
+</div>
+<p id="countdown-text" style="margin-top: 10px; color: #ccc;"></p>
+
+  </div>
+</div>
+
+<style>
+  /* Modal overlay */
+  .modal {
+    display: none;
+    position: fixed;
+    z-index: 999;
+    left: 0; top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.6);
+  }
+
+  /* Konten persegi dengan animasi */
+  .modal-content {
+    background-color: rgba(0, 0, 0, 0.09);
+    backdrop-filter: blur(15px);
+        -webkit-backdrop-filter: blur(100px) saturate(380%);
+    color: white;
+    padding: 30px 20px;
+    width: 90%;
+    max-width: 400px;
+    margin: 200px auto;
+    border: 2px solid #ff00cc;
+    box-shadow: 0 0 12px #000;
+    text-align: center;
+    animation: slideUpFade 0.4s ease-out;
+  }
+
+  .modal-actions {
+    margin-top: 20px;
+  }
+
+  .modal-actions button {
+    padding: 10px 20px;
+    margin: 0 10px;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    border-radius: 6px;
+  }
+
+  .modal-actions button:first-child {
+    background-color: #ff00cc;
+    color: white;
+  }
+
+  .modal-actions button:last-child {
+    background-color: #666;
+    color: white;
+  }
+
+  @keyframes slideUpFade {
+    from {
+      transform: translateY(50px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+</style>
+      </div>
+
+      <a class="back-link" href="/user/user-profile">← Kembali ke Profil</a>
+    </div>
+    <!-- Modal konfirmasi DILETAKKAN DI SINI (di luar form) -->
+    <div id="modal-konfirmasi" class="modal">
+      <div class="modal-content">
+        <p>Apakah Anda yakin ingin menyimpan perubahan?</p>
+        <div class="modal-actions">
+          <button onclick="submitForm()">Ya, Simpan</button>
+          <button onclick="tutupKonfirmasi()">Batal</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+  function bukaKonfirmasi() {
+    document.getElementById("modal-konfirmasi").style.display = "block";
+  }
+
+  function tutupKonfirmasi() {
+    document.getElementById("modal-konfirmasi").style.display = "none";
+  }
+
+  function submitForm() {
+    // Sinkronkan URL profil ke input hidden
+    const urlInput = document.getElementById('edit-profile-image-input');
+    const hiddenInput = document.getElementById('profile_image');
+    hiddenInput.value = urlInput.value.trim();
+
+    document.getElementById('form-edit-user').submit();
+  }
+</script>
+    <script>
+      function bukaKonfirmasi() {
+        document.getElementById("modal-konfirmasi").style.display = "block";
+      }
+
+      function tutupKonfirmasi() {
+        document.getElementById("modal-konfirmasi").style.display = "none";
+      }
+
+      function submitForm() {
+        // Sinkronkan link profile image yang baru
+        const urlInput = document.getElementById("edit-profile-image-input");
+        const hiddenInput = document.getElementById("profile_image");
+        hiddenInput.value = urlInput.value.trim();
+
+        document.querySelector("form").submit();
+      }
+    </script>
+  </body>
+</html>
+{% endblock %}

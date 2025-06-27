@@ -1,0 +1,210 @@
+{% extends 'user/layout.html' %} {% block isi %}
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Profil Pengguna</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: "Poppins", sans-serif;
+        background-image: url("https://i.pinimg.com/736x/0b/07/2f/0b072f4315c08b61b855d2557d559100.jpg");
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        color: white;
+      }
+
+      .containerprofile {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        padding: 40px;
+        background-color: rgba(0, 0, 0, 0.6);
+        min-height: 100vh;
+      }
+
+      .sidebar {
+        background: rgba(255, 255, 255, 0.1);
+        width: 100%;
+        max-width: 350px;
+        border-left: 8px solid #8400ff34;
+        border-radius: 15px;
+        padding: 20px;
+        backdrop-filter: blur(8px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        max-height: 500px;
+      }
+
+      .user-top {
+        height: 280px;
+        background-color: rgba(0, 0, 0, 0.5);
+        border-radius: 12px;
+        border: 2px solid #fff;
+        margin-bottom: 20px;
+      }
+
+      .user-bottom {
+        height: 100px;
+        background-color: rgba(0, 0, 0, 0.5);
+        border-radius: 10px;
+        position: relative;
+      }
+
+      .pagination {
+        position: absolute;
+        top: 50%;
+        right: -15px;
+        transform: translateY(-50%);
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .pagination span {
+        width: 10px;
+        height: 10px;
+        background-color: #ccc;
+        border-radius: 50%;
+      }
+
+      .main {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+
+      .fullname {
+        font-size: 1.4rem;
+        font-weight: 600;
+        border-bottom: 2px solid white;
+        padding-bottom: 8px;
+        text-transform: uppercase;
+        margin-bottom: 10px;
+      }
+
+      .card-box {
+        background: rgba(255, 255, 255, 0.1);
+        padding: 20px;
+        border-radius: 12px;
+        backdrop-filter: blur(8px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        max-width: 600px;
+      }
+
+      .user-data p {
+        margin: 10px 0;
+        font-size: 1rem;
+        color: #f0f0f0;
+      }
+
+      .user-data strong {
+        color: #ffcccc;
+      }
+
+      .tabs {
+        margin-top: 15px;
+        display: flex;
+        justify-content: flex-end;
+        gap: 6px;
+      }
+
+      .tabs div {
+        width: 18px;
+        height: 18px;
+        background-color: #d32f2f;
+        border-radius: 4px;
+      }
+
+      .small-cards {
+        display: flex;
+        gap: 20px;
+        flex-wrap: wrap;
+      }
+
+      .small-card {
+        background-color: rgba(0, 0, 0, 0.5);
+        width: 100px;
+        height: 100px;
+        border-radius: 10px;
+        border: 1px solid #fff;
+      }
+
+      @media (max-width: 768px) {
+        .containerprofile {
+          flex-direction: column;
+          padding: 20px;
+        }
+
+        .sidebar {
+          max-width: 100%;
+        }
+
+        .main {
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="containerprofile">
+      <!-- Kiri -->
+      <div class="sidebar">
+        <div class="user-top">
+          <img
+            src="{{ profileuser.profile_image}}"
+            alt="User Profile"
+            style="
+              width: 100%;
+              height: 100%;
+              object-fit: cover;
+              border-radius: 12px;
+            "
+          />
+        </div>
+        <div class="user-bottom">
+          <div class="pagination">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Kanan -->
+      <div class="main">
+        <div class="fullname">{{ profileuser.fullname }}</div>
+
+        <div class="card-box">
+          <div class="user-data">
+            <p><strong>Username:</strong> {{ profileuser.username }}</p>
+            <p><strong>Password:</strong> {{ profileuser.password }}</p>
+            <p><strong>ID User:</strong> #{{ profileuser.id }}</p>
+          </div>
+          <div class="tabs">
+            <div></div>
+            <div></div>
+            <div></div>
+          </div>
+        </div>
+
+        <div class="small-cards">
+          <div class="small-card"></div>
+          <div class="small-card"></div>
+        </div>
+      </div>
+    </div>
+    {% endblock %}
+  </body>
+</html>
