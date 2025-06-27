@@ -199,6 +199,17 @@
             {% endfor %} {% endif %} {% endwith %}
             <form action="/register" method="POST">
               <div class="mb-3">
+                <label for="fullname" class="form-label">Nama Lengkap</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="fullname"
+                  name="fullname"
+                  placeholder="Masukkan Nama Lengkap"
+                  required
+                />
+              </div>
+              <div class="mb-3">
                 <label for="username" class="form-label">Username</label>
                 <input
                   type="text"
@@ -242,6 +253,19 @@
                     <i class="bi bi-eye" id="iconToggleConfirm"></i>
                   </span>
                 </div>
+              </div>
+              <div class="mb-3">
+                <label for="profile_image" class="form-label"
+                  >Link foto profile</label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  id="profile_image"
+                  name="profile_image"
+                  placeholder="Masukkan link foto profile"
+                  required
+                />
               </div>
               <div class="d-grid mb-3">
                 <button type="submit" class="btn btn-primary">Daftar</button>
