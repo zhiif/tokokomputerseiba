@@ -7,7 +7,6 @@ app.secret_key = 'rahasia'
 db = MySQL(app) # Inisialisasi MySQL dengan app
 
 
-
 # Konfigurasi database
 app.config['MYSQL_DATABASE_HOST'] = 'localhost'
 app.config['MYSQL_DATABASE_USER'] = 'root'
@@ -16,6 +15,30 @@ app.config['MYSQL_DATABASE_DB'] = 'dbtokoa'
 
 # Hapus db.init_app(app) jika sudah menginisialisasi dengan app di atas
 # db.init_app(app) # Ini tidak perlu lagi jika sudah db = MySQL(app)
+@app.context_processor
+def inject_admin():
+    if 'user' in session and session.get('role') == 'admin':
+        try:
+            cursor = db.get_db().cursor()
+            cursor.execute("SELECT id, username, role, profile_image FROM user WHERE username = %s AND role = 'admin'", (session['user'],))
+            admin = cursor.fetchone()  # hasil = tuple: (id, username, role. profile_image)
+            return dict(admin=admin)
+        except:
+            pass
+    return dict(admin=None)
+
+@app.context_processor
+def inject_user():
+    if 'user' in session and session.get('role') == 'user':
+        try:
+            cursor = db.get_db().cursor()
+            cursor.execute("SELECT id, username, role, profile_image FROM user WHERE username = %s AND role = 'user'", (session['user'],))
+            user = cursor.fetchone()  # hasil = tuple: (id, username, role. profile_image)
+            return dict(user=user)
+        except:
+            pass
+    return dict(user=None)
+
 
 @app.route('/')
 def index():
@@ -71,6 +94,8 @@ def register():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
+        fullname = request.form['fullname']
+        profile_image = request.form.get('profile_image', '')  # Ambil gambar profil jika ada
 
         cursor = db.get_db().cursor()
         # Cek apakah username sudah digunakan
@@ -80,7 +105,7 @@ def register():
             return redirect('/register')
 
         try:
-            cursor.execute("INSERT INTO user (username, password) VALUES (%s, %s)", (username, password))
+            cursor.execute("INSERT INTO user (username, password, fullname, profile_image) VALUES (%s, %s, %s, %s)", (username, password, fullname, profile_image))
             db.get_db().commit()
             flash("Registrasi berhasil, silakan login.", "success")
             return redirect('/login')
@@ -142,6 +167,7 @@ def home():
     total_users = 0
     total_barang = 0
     total_co = 0
+    admin_data = []
     try:
         cursor = db.get_db().cursor()
         cursor.execute("SELECT COUNT(*) FROM user WHERE role = 'user'")
@@ -157,6 +183,10 @@ def home():
         flash(f"Gagal mengambil data dashboard: {e}", "danger")
 
     return render_template('admin/index.html', total_users=total_users, total_barang=total_barang, total_co=total_co)
+
+@app.route('/admin/profile')
+def bioadmin():
+    return render_template('admin/profile.html')
 
 # Contoh dari main.py Anda yang sudah benar:
 @app.route('/admin/admin-kelola-barang')
@@ -176,7 +206,7 @@ def kelolabarang():
         for row in cursor.fetchall():
             barang = dict(zip(columns, row)) # Ini yang menghasilkan dictionary!
             
-            barang['harga_formatted'] = f"Rp {int(barang['harga']):,}".replace(',', '.')
+            barang['harga_formatted'] = f"{int(barang['harga']):,}".replace(',', '.')
 
             full_description = barang['deskripsi'] if barang['deskripsi'] else ""
             description_limit = 100 
@@ -256,6 +286,10 @@ def formbarang():
 
 @app.route('/admin/form-edit-barang/<id>', methods=['GET', 'POST'])
 def formeditbarang(id):
+
+    if 'user' not in session or session.get('role') != 'admin':
+        flash("Anda harus login sebagai admin untuk mengakses halaman ini.", "danger")
+        return redirect('/login')
     if request.method == 'POST':
         nama = request.form['nama']
         harga = request.form['harga']
@@ -297,6 +331,10 @@ def formeditbarang(id):
 
 @app.route('/admin/hapus-barang/<int:id>', methods=['POST'])
 def hapus_barang(id):
+
+    if 'user' not in session or session.get('role') != 'admin':
+        flash("Anda harus login sebagai admin untuk mengakses halaman ini.", "danger")
+        return redirect('/login')
     try:
         cursor = db.get_db().cursor()
         cursor.execute("DELETE FROM barang WHERE id = %s", (id,))
@@ -312,16 +350,24 @@ def hapus_barang(id):
 @app.route('/logout')
 def logout():
     session.pop('user', None)
-    return redirect('/login')
+    session.pop('role', None)
+
+    # Redirect sesuai role (kalau kamu punya halaman login yang beda)
+    return redirect('/login')  # atau ganti dengan /user/login jika kamu pakai route khusus
+
 
 
 
 @app.route('/admin/admin-kelola-user')
 def kelolauser():
+    if 'user' not in session or session.get('role') != 'admin':
+        flash("Anda harus login sebagai admin untuk mengakses halaman ini.", "danger")
+        return redirect('/login')
+    
     data=[]
     try:
         cursor = db.get_db().cursor()
-        cursor.execute("SELECT * FROM user")
+        cursor.execute("SELECT * FROM user where role='user'")  # Hanya ambil user biasa
         data = cursor.fetchall()
     except Exception as e:
         flash(f"Gagal mengambil data: {e}", "danger")
@@ -330,6 +376,9 @@ def kelolauser():
 
 @app.route('/admin/form-tambah-user', methods=['GET', 'POST'])
 def formuser():
+    if 'user' not in session or session.get('role') != 'admin':
+        flash("Anda harus login sebagai admin untuk mengakses halaman ini.", "danger")
+        return redirect('/login')
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
@@ -351,6 +400,9 @@ def formuser():
 
 @app.route('/admin/form-edit-user/<id>', methods=['GET', 'POST'])
 def formedituser(id):
+    if 'user' not in session or session.get('role') != 'admin':
+        flash("Anda harus login sebagai admin untuk mengakses halaman ini.", "danger")
+        return redirect('/login')
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
@@ -384,6 +436,9 @@ def formedituser(id):
 
 @app.route('/admin/hapus-user/<int:id>', methods=['POST'])
 def hapus_user(id):
+    if 'user' not in session or session.get('role') != 'admin':
+        flash("Anda harus login sebagai admin untuk mengakses halaman ini.", "danger")
+        return redirect('/login')
     try:
         cursor = db.get_db().cursor()
         cursor.execute("DELETE FROM user WHERE id = %s", (id,))
@@ -394,6 +449,122 @@ def hapus_user(id):
 
 
     return redirect('/admin/admin-kelola-user')
+
+@app.route('/admin/admin-kelola-admin')
+def kelolaadmin():
+    if 'user' not in session or session.get('role') != 'admin':
+        flash("Anda harus login sebagai admin untuk mengakses halaman ini.", "danger")
+        return redirect('/login')
+    
+    admin_name = []
+    try:
+        cursor = db.get_db().cursor()
+        cursor.execute("SELECT * FROM user where role='admin'")  # Hanya ambil admin
+        admin_name = cursor.fetchall()
+    except Exception as e:
+        flash(f"Gagal mengambil data: {e}", "danger")
+    return render_template('admin/admin.html', hasil=admin_name)
+
+
+
+@app.route('/admin/admin-profile')
+def adminprofile():
+    if 'user' not in session or session.get('role') != 'admin':
+        flash("Anda harus login sebagai admin untuk mengakses halaman ini.", "danger")
+        return redirect('/login')
+    
+    admin_data=[]
+    try:
+        cursor = db.get_db().cursor()
+        cursor.execute("SELECT id, username, role FROM user WHERE username = %s AND role = 'admin'", (session['user'],))
+        admin_data = cursor.fetchone()
+    except Exception as e:
+        flash(f"Gagal mengambil data: {e}", "danger")
+
+    # ❗ Tambahkan return ini agar fungsi berakhir dengan jelas
+    return render_template('admin/profile.html', admin=admin_data)
+
+
+@app.route('/user/user-profile')
+def userprofile():
+    if 'user' not in session or session.get('role') != 'user':
+        flash("Silakan login terlebih dahulu.", "warning")
+        return redirect('/login')
+
+    try:
+        cursor = db.get_db().cursor()
+        cursor.execute("SELECT id, username, password, fullname, profile_image FROM user WHERE username = %s", (session['user'],))
+        data = cursor.fetchone()
+        if data:
+            user_data = {
+                'id': f"{data[0]:04}",  # Format ID jadi 4 digit
+                'username': data[1],
+                'password': data[2],
+                'fullname': data[3],
+                'profile_image': data[4] if data[4] else 'https://via.placeholder.com/150/cccccc/ffffff?text=No+Image'
+            }
+            return render_template('user/user-profile.html', profileuser=user_data)
+        else:
+            flash("User tidak ditemukan", "danger")
+            return redirect('/')
+    except Exception as e:
+        flash(f"Gagal mengambil data pengguna: {e}", "danger")
+        return redirect('/')
+
+@app.route('/user/edit-profile-user', methods=['GET', 'POST'])
+def editprofileuser():
+    if 'user' not in session or session.get('role') != 'user':
+        flash("Silakan login terlebih dahulu.", "warning")
+        return redirect('/login')
+
+    conn = db.get_db()
+    cursor = conn.cursor()
+
+    if request.method == 'POST':
+        # Ambil data dari form
+        fullname = request.form['fullname']
+        username = request.form['username']
+        password = request.form['password']
+        profile_image = request.form['profile_image']
+
+        try:
+            # Update data user berdasarkan username lama (dari session)
+            cursor.execute("""
+                UPDATE user SET fullname = %s, username = %s, password = %s, profile_image = %s
+                WHERE username = %s
+            """, (fullname, username, password, profile_image, session['user']))
+            conn.commit()
+
+            # Update session jika username berubah
+            session['user'] = username
+
+            flash("Profil berhasil diperbarui.", "success")
+            return redirect('/user/user-profile-user')
+
+        except Exception as e:
+            flash(f"Terjadi kesalahan saat memperbarui profil: {e}", "danger")
+            return redirect('/user/edit-profile-user')
+
+    # GET: Tampilkan form dengan data saat ini
+    cursor.execute("SELECT id, username, password, fullname, profile_image FROM user WHERE username = %s", (session['user'],))
+    data = cursor.fetchone()
+
+    if not data:
+        flash("Data user tidak ditemukan.", "danger")
+        return redirect('/')
+
+    profileuser = {
+        'id': f"{data[0]:04}",  # Format ID jadi 4 digit
+        'username': data[1],
+        'password': data[2],
+        'fullname': data[3],
+        'profile_image': data[4] if data[4] else 'https://via.placeholder.com/150/cccccc/ffffff?text=No+Image'
+    }
+
+    return render_template('user/editprofile.html', profileuser=profileuser)
+
+
+
 @app.route('/api/barang', methods=['POST'])
 def api_barang():
     data = request.get_json()
