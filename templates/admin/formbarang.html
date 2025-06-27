@@ -187,6 +187,22 @@
           <option value="Lainnya">Lainnya</option>
         </select>
       </div>
+
+      <div class="mb-3">
+        <label class="form-label">Kombinasi Varian Produk</label>
+        <div id="kombinasi-container"></div>
+        <button
+          type="button"
+          class="btn btn-secondary mt-2"
+          onclick="tambahKombinasi()"
+        >
+          + Tambah Kombinasi
+        </button>
+        <small class="form-text text-muted"
+          >Contoh: RAM=8GB,Warna=Hitam → Stok & Harga spesifik</small
+        >
+      </div>
+
       <div class="mb-3">
         <label for="text" class="form-label"
           >URL Gambar Produk (dari GitHub)</label
@@ -215,4 +231,27 @@
     </form>
   </div>
 </div>
+<script>
+  let kombinasiIndex = 0;
+
+  function tambahKombinasi() {
+    const container = document.getElementById("kombinasi-container");
+    const div = document.createElement("div");
+    div.classList.add("p-3", "mt-3", "border", "rounded");
+    div.style.backgroundColor = "rgba(255,255,255,0.03)";
+    div.innerHTML = `
+    <label>Kombinasi Varian:</label>
+    <input type="text" class="form-control mb-2" name="kombinasi_${kombinasiIndex}" placeholder="Contoh: RAM=8GB,Warna=Hitam" required>
+
+    <label>Harga:</label>
+    <input type="number" class="form-control mb-2" name="harga_${kombinasiIndex}" required>
+
+    <label>Stok:</label>
+    <input type="number" class="form-control mb-2" name="stok_${kombinasiIndex}" required>
+  `;
+    container.appendChild(div);
+    kombinasiIndex++;
+  }
+</script>
+
 {%endblock%}

@@ -16,6 +16,15 @@
       href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap"
       rel="stylesheet"
     />
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+
     <style>
       /* Variabel Global untuk Konsistensi Desain */
       :root {
@@ -77,6 +86,43 @@
         --scrollbar-thumb-hover-color: #a879ff; /* Ungu terang saat hover */
         --scrollbar-width: 8px; /* Lebar scrollbar */
         --scrollbar-border-radius: 5px; /* Border radius scrollbar */
+
+        /* Profile Menu Specific Variables */
+        --profile-menu-font-family: "Inter", sans-serif;
+        --profile-menu-spacing: 16px; /* Keep this for general use */
+        --profile-menu-radius: 7px; /* Adjusted for consistency with sidebar */
+        --profile-menu-transition-speed: 0.3s;
+
+        /* Light theme colors (adapted for sidebar) */
+        --profile-light-panel-bg: rgba(
+          var(--sidebar-bg-rgb),
+          var(--sidebar-bg-alpha)
+        );
+        --profile-light-card-bg: rgba(
+          255,
+          255,
+          255,
+          0.1
+        ); /* Slightly more opaque for card */
+        --profile-light-text-primary: var(--sidebar-text-color);
+        --profile-light-text-secondary: rgba(
+          248,
+          249,
+          250,
+          0.7
+        ); /* Slightly darker for secondary text */
+        --profile-light-icon-color: var(--sidebar-text-color);
+        --profile-light-hover-bg: var(--sidebar-link-hover-bg);
+        --profile-light-link-highlight: var(--sidebar-link-hover-color);
+
+        /* Dark theme colors (adapted for sidebar) */
+        --profile-dark-panel-bg: rgba(30, 30, 30, 0.8);
+        --profile-dark-card-bg: rgba(42, 42, 42, 0.8);
+        --profile-dark-text-primary: #f0f0f0;
+        --profile-dark-text-secondary: #888888;
+        --profile-dark-icon-color: #f0f0f0cc;
+        --profile-dark-hover-bg: rgba(74, 21, 12, 0.7);
+        --profile-dark-link-highlight: #ff5722; /* Retain original highlight for contrast */
       }
 
       /* Styling Scrollbar (untuk WebKit browsers seperti Chrome, Safari, Edge) */
@@ -156,6 +202,8 @@
         transition: left 0.3s ease, width 0.3s ease, background-color 0.4s ease,
           border-color 0.4s ease, box-shadow 0.4s ease,
           backdrop-filter 0.4s ease; /* Transisi untuk hover */
+        display: flex; /* Make it a flex container */
+        flex-direction: column; /* Stack items vertically */
       }
 
       /* Animasi hover untuk sidebar */
@@ -365,28 +413,328 @@
         overflow-x: hidden;
       }
 
+      /* --- Profile Menu Styling (integrated and adapted) --- */
+      .profile-menu {
+        position: relative; /* Needed for positioning the dropdown */
+        padding: 0; /* Keep this 0 */
+        margin-top: auto; /* Push to the bottom */
+        width: 100%;
+      }
+
+      .profile-card {
+        background-color: transparent; /* Default: transparent */
+        backdrop-filter: none; /* Default: no glass effect */
+        -webkit-backdrop-filter: none;
+        border: 1px solid rgba(255, 255, 255, 0.3); /* Border tipis untuk light theme */
+        border-radius: var(--profile-menu-radius);
+        text-align: center;
+        padding: 10px var(--profile-menu-spacing); /* Adjusted to 10px top/bottom for compactness */
+        box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1); /* Ditambahkan shadow tipis untuk light theme */
+        transition: background-color var(--profile-menu-transition-speed),
+          color var(--profile-menu-transition-speed),
+          box-shadow var(--profile-menu-transition-speed),
+          backdrop-filter var(--profile-menu-transition-speed),
+          border-color var(--profile-menu-transition-speed);
+        cursor: pointer;
+      }
+
+      /* Add back image styling */
+      .profile-card img {
+        width: 72px; /* Set to 72px originally */
+        height: 72px; /* Set to 72px originally */
+        border-radius: 50%; /* THIS IS THE KEY FOR CIRCLE */
+        object-fit: cover;
+        margin-bottom: 8px; /* Reduced space between image and text */
+        transition: width 0.3s ease, height 0.3s ease, margin 0.3s ease; /* Ensure smooth transition */
+      }
+
+      /* Reset margins and adjust font sizes for text elements inside profile card */
+      .profile-card h2 {
+        margin: 0; /* Remove default margins */
+        font-size: 1rem; /* Smaller font for name */
+        line-height: 1.2; /* Compact line height */
+        font-weight: 600;
+      }
+      .profile-card p {
+        margin: 0; /* Remove default margins */
+        font-size: 0.85rem; /* Smaller font for followers count */
+        line-height: 1.2; /* Compact line height */
+        color: var(
+          --profile-light-text-secondary
+        ); /* Use secondary text color */
+      }
+
+      /* Dark mode styling for profile card */
+      body.dark-mode .profile-card {
+        background-color: transparent;
+        backdrop-filter: blur(8px) saturate(180%); /* Glassmorphism di dark mode */
+        -webkit-backdrop-filter: blur(8px) saturate(180%);
+        border: 1px solid rgba(255, 255, 255, 0.15); /* Border lebih subtle di dark mode */
+        box-shadow: 0 1px 5px rgba(0, 0, 0, 0.3); /* Ditambahkan shadow tipis untuk dark theme */
+        color: var(
+          --profile-dark-text-primary
+        ); /* Pastikan teks tetap terbaca */
+      }
+      body.dark-mode .profile-card p {
+        color: var(
+          --profile-dark-text-secondary
+        ); /* Pastikan teks secondary tetap terbaca */
+      }
+
+      /* Hide text and adjust image when sidebar is collapsed */
+      .l-navbar.collapsed .profile-card h2,
+      .l-navbar.collapsed .profile-card p {
+        display: none;
+      }
+      .l-navbar.collapsed .profile-card img {
+        width: 40px;
+        height: 40px;
+        margin-bottom: 0;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      /* Remove background, shadow, and border from profile card when sidebar is collapsed */
+      .l-navbar.collapsed .profile-card {
+        background: transparent;
+        box-shadow: none; /* Dihilangkan shadow saat collapsed */
+        border-radius: 0;
+        padding: 10px 0.5rem; /* Maintain vertical padding for collapsed state */
+        backdrop-filter: none; /* Selalu tanpa backdrop-filter saat collapsed */
+        -webkit-backdrop-filter: none;
+        border: none; /* Tanpa border saat collapsed */
+      }
+
+      /* Profile Dropdown Content Container */
+      .profile-dropdown-content {
+        position: absolute;
+        bottom: 100%;
+        left: 0;
+        width: 100%;
+        background: transparent; /* Default: transparent */
+        backdrop-filter: none; /* Default: no glass effect */
+        -webkit-backdrop-filter: none;
+        border: 1px solid rgba(255, 255, 255, 0.3); /* Border tipis untuk light theme */
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* Ditambahkan shadow untuk light theme */
+        border-radius: var(--profile-menu-radius);
+        transform: translateX(-100%);
+        opacity: 0;
+        visibility: hidden;
+        transition: transform 0.3s ease-out, opacity 0.3s ease-out,
+          visibility 0s 0.3s, background var(--profile-menu-transition-speed),
+          backdrop-filter var(--profile-menu-transition-speed),
+          border-color var(--profile-menu-transition-speed),
+          box-shadow var(--profile-menu-transition-speed);
+        z-index: var(--z-fixed) - 1;
+      }
+
+      .profile-dropdown-content.active {
+        transform: translateX(0);
+        opacity: 1;
+        visibility: visible;
+        transition: transform 0.3s ease-out, opacity 0.3s ease-out,
+          visibility 0s 0s;
+      }
+
+      /* Dark mode styling for profile dropdown content */
+      body.dark-mode .profile-dropdown-content {
+        background: transparent; /* Transparan di dark mode */
+        backdrop-filter: blur(10px) saturate(150%); /* Glassmorphism di dark mode */
+        -webkit-backdrop-filter: blur(10px) saturate(150%);
+        border: 1px solid rgba(255, 255, 255, 0.15); /* Border lebih subtle di dark mode */
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3); /* Ditambahkan shadow untuk dark theme */
+      }
+
+      /* Menu List inside dropdown */
+      .profile-dropdown-content nav {
+        display: flex;
+        flex-direction: column;
+        padding: 0 0.5rem;
+      }
+      .profile-dropdown-content nav button,
+      .profile-dropdown-content nav a {
+        all: unset;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 0.75rem 1rem;
+        font-weight: 600;
+        font-size: var(--normal-font-size);
+        color: var(--profile-light-text-primary);
+        border-radius: 0.5rem;
+        transition: background var(--profile-menu-transition-speed),
+          color var(--profile-menu-transition-speed);
+        width: 100%;
+        box-sizing: border-box;
+        text-decoration: none;
+      }
+      .profile-dropdown-content nav button:hover,
+      .profile-dropdown-content nav button:focus-visible,
+      .profile-dropdown-content nav a:hover,
+      .profile-dropdown-content nav a:focus-visible {
+        background: var(--profile-light-hover-bg);
+        color: var(--profile-light-link-highlight);
+        outline-offset: 2px;
+        outline: 2px solid var(--profile-light-link-highlight);
+        text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+      }
+      body.dark-mode .profile-dropdown-content nav button:hover,
+      body.dark-mode .profile-dropdown-content nav button:focus-visible,
+      body.dark-mode .profile-dropdown-content nav a:hover,
+      body.dark-mode .profile-dropdown-content nav a:focus-visible {
+        background: var(--profile-dark-hover-bg);
+        color: var(--profile-dark-link-highlight);
+      }
+      .profile-dropdown-content nav button.active,
+      .profile-dropdown-content nav a.active {
+        background: var(--sidebar-active-bg);
+        color: var(--profile-light-link-highlight);
+        font-weight: 600;
+        text-shadow: 0 0 3px rgba(255, 255, 255, 0.3);
+      }
+      body.dark-mode .profile-dropdown-content nav button.active,
+      body.dark-mode .profile-dropdown-content nav a.active {
+        background: var(--profile-dark-hover-bg);
+        color: var(--profile-dark-link-highlight);
+      }
+
+      /* Hide text when sidebar is collapsed */
+      .l-navbar.collapsed .profile-dropdown-content nav button .switch-label,
+      .l-navbar.collapsed
+        .profile-dropdown-content
+        nav
+        button
+        span:not(.material-icons),
+      .l-navbar.collapsed
+        .profile-dropdown-content
+        nav
+        a
+        span:not(.material-icons) {
+        display: none;
+      }
+      /* Center icons when sidebar is collapsed */
+      .l-navbar.collapsed .profile-dropdown-content nav button .material-icons,
+      .l-navbar.collapsed .profile-dropdown-content nav a .material-icons {
+        margin: auto;
+      }
+
+      /* Icons for profile menu */
+      .profile-dropdown-content .material-icons {
+        font-size: 1.25rem;
+        color: inherit;
+        flex-shrink: 0;
+        margin-right: 1rem;
+      }
+      /* Remove margin for icons in collapsed state */
+      .l-navbar.collapsed .profile-dropdown-content .material-icons {
+        margin-right: 0;
+      }
+
+      /* Switch container */
+      .profile-dropdown-content .switch-label {
+        flex-grow: 1;
+      }
+
+      /* Toggle switch */
+      .profile-dropdown-content .switch {
+        position: relative;
+        display: inline-block;
+        width: 44px;
+        height: 24px;
+      }
+      .profile-dropdown-content .switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+      }
+      .profile-dropdown-content .slider {
+        position: absolute;
+        cursor: pointer;
+        background-color: #ccc;
+        border-radius: 12px;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        transition: background-color var(--profile-menu-transition-speed);
+      }
+      .profile-dropdown-content .slider:before {
+        position: absolute;
+        content: "";
+        height: 18px;
+        width: 18px;
+        left: 3px;
+        bottom: 3px;
+        background-color: white;
+        border-radius: 50%;
+        transition: transform var(--profile-menu-transition-speed);
+      }
+      .profile-dropdown-content input:checked + .slider {
+        background-color: var(--profile-light-link-highlight);
+      }
+      body.dark-mode .profile-dropdown-content input:checked + .slider {
+        background-color: var(--profile-dark-link-highlight);
+      }
+      .profile-dropdown-content input:checked + .slider:before {
+        transform: translateX(20px);
+      }
+
+      /* Divider and footer */
+      .profile-dropdown-content .divider {
+        border-top: 1px solid var(--sidebar-border-color);
+        margin: var(--profile-menu-spacing) 0.5rem;
+      }
+      body.dark-mode .profile-dropdown-content .divider {
+        border-color: rgba(255, 255, 255, 0.2);
+      }
+      .profile-dropdown-content .footer {
+        font-size: 0.75rem;
+        color: var(--profile-light-text-secondary);
+        text-align: center;
+        padding-bottom: var(--profile-menu-spacing);
+        user-select: none;
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+      }
+      body.dark-mode .profile-dropdown-content .footer {
+        color: var(--profile-dark-text-secondary);
+      }
+      .profile-dropdown-content .footer a {
+        color: inherit;
+        text-decoration: none;
+        margin: 0 6px;
+      }
+      .profile-dropdown-content .footer a:hover,
+      .profile-dropdown-content .footer a:focus-visible {
+        text-decoration: underline;
+        outline-offset: 2px;
+        outline: 2px solid currentColor;
+      }
+      .l-navbar.collapsed .profile-dropdown-content .footer {
+        display: none;
+      }
+
       /* Responsifitas */
       @media (min-width: 768px) {
         /* Desktop */
         body {
-          margin-left: var(
-            --nav-width
-          ); /* Default saat load untuk desktop (sidebar terbuka) */
-          overflow-x: hidden; /* Pastikan tidak ada scrollbar horizontal di desktop */
+          margin-left: var(--nav-width);
+          overflow-x: hidden;
         }
 
         .l-navbar {
-          left: 0; /* Sidebar selalu di layar di desktop */
+          left: 0;
           padding: 1rem;
         }
 
         .l-navbar.collapsed {
-          left: 0; /* Pastikan tetap di 0 saat collapsed */
+          left: 0;
         }
 
         .main-wrapper {
-          margin-left: var(--nav-width); /* Default saat load untuk desktop */
-          overflow-x: hidden; /* Tidak ada scrollbar horizontal di desktop */
+          margin-left: var(--nav-width);
+          overflow-x: hidden;
         }
 
         .main-wrapper.shifted-collapsed {
@@ -395,72 +743,228 @@
 
         /* Sembunyikan mobile-top-toggle di desktop */
         .mobile-top-toggle {
-          display: none !important; /* Gunakan !important untuk memastikan override */
+          display: none !important;
         }
 
         /* Tampilkan Admin Panel text dan icon toggle di desktop */
         .nav_logo {
-          justify-content: space-between; /* Untuk ikon toggle di kanan */
+          justify-content: space-between;
           cursor: pointer;
         }
         .nav_logo .admin-panel-text {
-          display: inline-block; /* Pastikan teks terlihat */
+          display: inline-block;
           opacity: 1;
           width: auto;
         }
         .nav_logo .bx-menu {
-          display: block; /* Pastikan ikon terlihat */
-          margin-left: 0; /* Default */
+          display: block;
+          margin-left: 0;
           margin-right: 0;
         }
 
         /* Khusus saat desktop collapsed */
         .l-navbar.collapsed .nav_logo {
-          justify-content: center; /* Pusatkan ikon toggle */
+          justify-content: center;
         }
 
         /* Pastikan konten utama tidak scroll horizontal di desktop */
         .main-content {
           overflow-x: hidden;
         }
+
+        /* Profile Dropdown positioning for desktop */
+        .profile-dropdown-content {
+          position: absolute;
+          top: auto;
+          bottom: 100%;
+          left: 0;
+          width: 100%;
+          border-radius: var(--profile-menu-radius);
+        }
+
+        /* When sidebar is collapsed */
+        .l-navbar.collapsed .profile-dropdown-content {
+          bottom: unset;
+          top: 0;
+          left: var(--nav-width-collapsed);
+          width: var(--nav-width);
+          border-radius: var(--profile-menu-radius);
+          /* Pastikan border dan glassmorphism tetap konsisten saat floating */
+          border: 1px solid rgba(255, 255, 255, 0.15); /* Border saat collapsed floating */
+          box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* Shadow yang terlihat saat floating */
+          /* backdrop-filter untuk collapsed state akan ditangani oleh body.dark-mode class */
+          /* Jadi tidak perlu di set none disini jika ingin tetap glass di dark mode collapsed */
+        }
+        /* Tambahkan aturan khusus untuk backdrop-filter di dark mode collapsed jika diperlukan,
+           tapi aturan body.dark-mode .profile-dropdown-content sudah cukup */
+
+        /* To prevent text overflow on profile card in collapsed state, though we hide it. */
+        .l-navbar.collapsed .profile-card h2,
+        .l-navbar.collapsed .profile-card p {
+          display: none;
+        }
       }
 
       @media (max-width: 767px) {
         /* Mobile */
         body {
-          margin-left: 0 !important; /* Tidak ada margin-left di mobile */
-          overflow-x: auto; /* Izinkan scrollbar horizontal di mobile */
+          margin-left: 0 !important;
+          overflow-x: auto;
         }
         .l-navbar {
-          left: -250px; /* Default tertutup di mobile */
-          padding-top: 1rem; /* Tetap padding atas */
+          left: -250px;
+          padding-top: 1rem;
+          overflow: hidden;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+          height: 100vh;
         }
         .l-navbar.show {
-          left: 0; /* Terbuka di mobile */
+          left: 0;
           width: var(--nav-width);
         }
         .main-wrapper {
-          margin-left: 0 !important; /* Di mobile, konten tidak bergeser */
-          overflow-x: auto; /* Izinkan main-wrapper untuk scroll horizontal di mobile */
+          margin-left: 0 !important;
+          overflow-x: auto;
         }
         .main-wrapper.shifted,
         .main-wrapper.shifted-collapsed {
-          margin-left: 0 !important; /* Jangan geser di mobile */
+          margin-left: 0 !important;
         }
 
         /* Tampilkan mobile-top-toggle di mobile */
         .mobile-top-toggle {
-          display: flex !important; /* Pastikan terlihat */
+          display: flex !important;
         }
 
         /* Sembunyikan Admin Panel text dan icon toggle di dalam sidebar di mobile */
         .nav_logo {
-          display: none !important; /* Sembunyikan seluruh nav_logo di mobile */
+          display: none !important;
         }
 
         /* Izinkan konten utama untuk scroll horizontal di mobile jika diperlukan */
         .main-content {
           overflow-x: auto;
+        }
+
+        .nav {
+          flex-grow: 1;
+          display: flex;
+          flex-direction: column;
+          height: 100%;
+          justify-content: space-between;
+          height: 100%; /* Full height for mobile */
+        }
+        .nav > div:first-child {
+          display: flex;
+          flex-direction: column;
+          flex-grow: 1;
+        }
+
+        .nav_list {
+          display: flex;
+          flex-direction: column;
+          flex-grow: 1;
+        }
+
+        /* Profile menu adjustments for mobile (when sidebar is open) */
+        .l-navbar .profile-menu {
+          display: none;
+          width: 100%;
+          margin-left: 0;
+          margin-right: 0;
+          padding: 1rem;
+          border-radius: 0;
+          box-shadow: none;
+          position: relative;
+          z-index: 999;
+          margin-top: auto; /* Jarak dari atas */
+        }
+
+        .l-navbar.mobile-open .profile-menu {
+          display: block;
+          flex-direction: column;
+        }
+
+        .profile-card {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          padding: 1rem;
+          border-radius: 0;
+          box-shadow: none;
+          background-color: transparent;
+          backdrop-filter: none;
+          -webkit-backdrop-filter: none;
+          border: none;
+          width: 100%;
+          max-width: 100%;
+          word-wrap: break-word;
+          white-space: normal;
+          overflow: hidden;
+          position: relative;
+        }
+
+        .profile-card img {
+          width: 56px;
+          height: 56px;
+        }
+
+        .profile-card h2 {
+          font-size: 0.9rem;
+          margin: 0;
+          line-height: 1.2;
+          font-weight: 600;
+          text-align: center;
+        }
+
+        .profile-card p {
+          font-size: 0.75rem;
+          margin: 0;
+          line-height: 1.2;
+          color: var(--profile-light-text-secondary);
+          text-align: center;
+        }
+
+        body.dark-mode .profile-card {
+          backdrop-filter: blur(8px) saturate(180%);
+          -webkit-backdrop-filter: blur(8px) saturate(180%);
+          border: none;
+          box-shadow: none;
+        }
+
+        /* Profile dropdown content for mobile (when sidebar is open) */
+        .profile-dropdown-content {
+          border-radius: 0;
+          box-shadow: none;
+          position: relative;
+          transform: none !important;
+          left: 0;
+          width: 100%;
+          background: transparent;
+          backdrop-filter: none;
+          -webkit-backdrop-filter: none;
+          border: none;
+        }
+        body.dark-mode .profile-dropdown-content {
+          backdrop-filter: blur(10px) saturate(150%);
+          -webkit-backdrop-filter: blur(10px) saturate(150%);
+          border: none;
+        }
+
+        .profile-dropdown-content nav button,
+        .profile-dropdown-content nav a {
+          border-radius: 0;
+          padding: 1rem;
+        }
+        .profile-dropdown-content .divider {
+          margin: var(--profile-menu-spacing) 0;
+        }
+        .profile-dropdown-content .footer {
+          padding-left: 1rem;
+          padding-right: 1rem;
         }
       }
     </style>
@@ -501,6 +1005,14 @@
               <span class="nav_name">Kelola User</span>
             </a>
             <a
+              <a
+              href="/admin/admin-kelola-admin"
+              class="nav_link {% if request.path == '/admin/admin-kelola-admin' %}active{% endif %}"
+            >
+              <i class="bx bx-user nav_icon"></i>
+              <span class="nav_name">Kelola Admin</span>
+            </a>
+            <a
               href="/admin/kelola-transaksi"
               class="nav_link {% if request.endpoint == '/admin/kelola-transaksi' %}active{% endif %}"
             >
@@ -509,10 +1021,84 @@
             </a>
           </div>
         </div>
-        <a href="/logout" class="nav_link">
-          <i class="bx bx-log-out nav_icon"></i>
-          <span class="nav_name">SignOut</span>
-        </a>
+      </div>
+      <div class="profile-menu" role="region" aria-label="User profile menu">
+        {% if admin %}
+        <section
+          class="profile-card"
+          data-admin-id="{{ admin[0] }}"
+          data-admin-name="{{ admin[1] }}"
+          id="profile-dropdown-toggle"
+          tabindex="0"
+          role="button"
+          aria-haspopup="true"
+          aria-expanded="false"
+        >
+          <img
+            src="{{ admin[3] or 'https://dummyimage.com/72x72/ccc/fff&text=User' }}"
+            alt="Profile picture"
+            width="72"
+            height="72"
+          />
+          <h2>{{ admin[1] }}</h2>
+          <!-- username -->
+          <p>ADMIN ID: {{ admin[0] }}</p>
+          <!-- id -->
+        </section>
+        {% endif %}
+
+        <div class="profile-dropdown-content" id="profile-dropdown-content">
+          <nav aria-label="Profile navigation">
+            <button type="button" aria-pressed="false" class="nav_link_profile">
+              <span class="material-icons" aria-hidden="true"
+                >person_outline</span
+              >
+              <span>My Profile</span>
+            </button>
+            <button
+              type="button"
+              aria-pressed="false"
+              id="email-settings-btn"
+              class="nav_link_profile"
+            >
+              <span class="material-icons" aria-hidden="true"
+                >mail_outline</span
+              >
+              <span>Email Settings</span>
+            </button>
+            <button type="button" aria-pressed="false" class="nav_link_profile">
+              <span class="material-icons" aria-hidden="true">settings</span>
+              <span>Settings</span>
+            </button>
+            <button
+              type="button"
+              aria-pressed="false"
+              class="switch-container nav_link_profile"
+              aria-label="Toggle dark mode"
+            >
+              <span class="material-icons" aria-hidden="true">dark_mode</span>
+              <span class="switch-label">Switch to Dark</span>
+              <label class="switch" for="dark-mode-toggle">
+                <input
+                  type="checkbox"
+                  id="dark-mode-toggle"
+                  aria-checked="false"
+                  aria-labelledby="dark-mode-toggle-label"
+                />
+                <span class="slider"></span>
+              </label>
+            </button>
+            <a href="/logout" class="nav_link_profile">
+              <span class="material-icons" aria-hidden="true">logout</span>
+              <span>Log Out</span>
+            </a>
+          </nav>
+          <div class="divider" role="presentation"></div>
+          <footer class="footer" aria-label="Legal and policy links">
+            <a href="#" tabindex="0">Privacy Policy</a> &bull;
+            <a href="#" tabindex="0">Terms of Service</a>
+          </footer>
+        </div>
       </div>
     </div>
 
@@ -536,6 +1122,13 @@
         const nav = document.getElementById("nav-bar");
         const wrapper = document.getElementById("main-wrapper");
         const overlay = document.getElementById("body-overlay");
+
+        const profileDropdownToggle = document.getElementById(
+          "profile-dropdown-toggle"
+        );
+        const profileDropdownContent = document.getElementById(
+          "profile-dropdown-content"
+        );
 
         let isSidebarOpenDesktop = true;
 
@@ -569,6 +1162,7 @@
           mobileToggle.addEventListener("click", () => {
             if (window.innerWidth < 768) {
               nav.classList.toggle("show");
+              nav.classList.toggle("mobile-open");
               updateUI();
             }
           });
@@ -580,13 +1174,20 @@
             if (window.innerWidth >= 768) {
               isSidebarOpenDesktop = !isSidebarOpenDesktop;
               updateUI();
+              // Close profile dropdown when sidebar collapses/expands
+              profileDropdownContent.classList.remove("active");
+              profileDropdownToggle.setAttribute("aria-expanded", "false");
             }
           });
         }
 
         overlay.addEventListener("click", () => {
           if (window.innerWidth < 768) {
-            nav.classList.remove("show");
+            if (isOpen) {
+              nav.classList.remove("mobile-open", "show");
+            } else {
+              nav.classList.add("mobile-open", "show");
+            }
             updateUI();
           }
         });
@@ -606,6 +1207,115 @@
             nav.classList.remove("show");
           }
           updateUI();
+          // Ensure profile dropdown closes on resize if it's open, to recalculate position
+          profileDropdownContent.classList.remove("active");
+          profileDropdownToggle.setAttribute("aria-expanded", "false");
+        });
+
+        // Profile Dropdown Toggle Logic
+        profileDropdownToggle.addEventListener("click", (event) => {
+          event.stopPropagation(); // Prevent click from bubbling up to document and immediately closing
+
+          if (window.innerWidth >= 768) {
+            // Desktop
+            if (nav.classList.contains("collapsed")) {
+              // Sidebar is collapsed, click profile to expand sidebar
+              isSidebarOpenDesktop = true;
+              updateUI();
+              // Ensure profile menu is closed (it shouldn't have opened)
+              profileDropdownContent.classList.remove("active");
+              profileDropdownToggle.setAttribute("aria-expanded", "false");
+            } else {
+              // Sidebar is expanded, click profile to toggle menu
+              const isExpanded =
+                profileDropdownContent.classList.contains("active");
+              profileDropdownContent.classList.toggle("active");
+              profileDropdownToggle.setAttribute("aria-expanded", !isExpanded);
+            }
+          } else {
+            // Mobile
+            if (nav.classList.contains("show")) {
+              // Sidebar is open on mobile, click profile to toggle menu
+              const isExpanded =
+                profileDropdownContent.classList.contains("active");
+              profileDropdownContent.classList.toggle("active");
+              profileDropdownToggle.setAttribute("aria-expanded", !isExpanded);
+            }
+            // If sidebar is closed on mobile, do nothing when profile is clicked
+            // The mobile-top-toggle button handles opening the sidebar.
+          }
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener("click", (event) => {
+          // Check if the click is outside the profile-menu container itself
+          const profileMenuContainer =
+            profileDropdownToggle.closest(".profile-menu");
+          if (
+            profileMenuContainer &&
+            !profileMenuContainer.contains(event.target)
+          ) {
+            profileDropdownContent.classList.remove("active");
+            profileDropdownToggle.setAttribute("aria-expanded", "false");
+          }
+        });
+
+        // Script to toggle dark mode and update ARIA attributes (from profile menu)
+        const darkModeToggle = document.getElementById("dark-mode-toggle");
+        const body = document.body;
+
+        function setDarkMode(enabled) {
+          if (enabled) {
+            body.classList.add("dark-mode");
+            darkModeToggle.setAttribute("aria-checked", "true");
+          } else {
+            body.classList.remove("dark-mode");
+            darkModeToggle.setAttribute("aria-checked", "false");
+          }
+        }
+
+        // Initialize dark mode based on user preference or default to off
+        const prefersDarkMode =
+          window.matchMedia &&
+          window.matchMedia("(prefers-color-scheme: dark)").matches;
+        const savedDarkMode = localStorage.getItem("darkMode");
+
+        if (savedDarkMode === "true") {
+          setDarkMode(true);
+          darkModeToggle.checked = true;
+        } else if (savedDarkMode === null && prefersDarkMode) {
+          setDarkMode(true);
+          darkModeToggle.checked = true;
+        } else {
+          setDarkMode(false);
+          darkModeToggle.checked = false;
+        }
+
+        darkModeToggle.addEventListener("change", (e) => {
+          setDarkMode(e.target.checked);
+          localStorage.setItem("darkMode", e.target.checked); // Save preference
+        });
+
+        // Optional: Manage active buttons for accessibility (from profile menu, adapted for nav_link_profile)
+        const navProfileItems = document.querySelectorAll(
+          ".profile-dropdown-content nav button, .profile-dropdown-content nav a"
+        );
+
+        navProfileItems.forEach((item) => {
+          item.addEventListener("click", () => {
+            // Remove 'active' from all profile menu items
+            navProfileItems.forEach((btn) => {
+              btn.classList.remove("active");
+              if (btn.tagName === "BUTTON") {
+                btn.setAttribute("aria-pressed", "false");
+              }
+            });
+            // Add 'active' to the clicked item
+            item.classList.add("active");
+            if (item.tagName === "BUTTON") {
+              item.setAttribute("aria-pressed", "true");
+            }
+          });
         });
       });
     </script>

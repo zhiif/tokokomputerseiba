@@ -157,6 +157,17 @@
           <option value="Lainnya" {% if current_kategori == 'Lainnya' %}selected{% endif %}>Lainnya</option>
         </select>
       </div>
+
+      <div class="mb-3">
+  <label class="form-label">Varian Produk (Opsional)</label>
+  <div id="varian-container"></div>
+  <button type="button" class="btn btn-secondary mt-2" onclick="tambahVarian()">+ Tambah Varian</button>
+  <small class="form-text text-muted"
+    >Jika produk memiliki varian seperti RAM, Warna, atau Penyimpanan, tambahkan di sini. Jika tidak, biarkan kosong dan gunakan harga/stok utama.</small
+  >
+</div>
+
+
       <div class="mb-3">
         <label for="nama" class="form-label">link gambar</label>
         <input type="text" class="form-control" id="gambar_url" name="gambar_url" value="{{barang[6]}}" required>
@@ -169,4 +180,42 @@
     </form>
   </div>
 </div>
+<script>
+let varianIndex = 0;
+
+function tambahVarian() {
+  const container = document.getElementById("varian-container");
+  const div = document.createElement("div");
+  div.classList.add("p-3", "mt-3", "border", "rounded");
+  div.style.backgroundColor = "rgba(255,255,255,0.03)";
+  div.innerHTML = `
+    <label>Harga Varian:</label>
+    <input class="form-control mb-2" name="varian_${varianIndex}_harga" type="number" required>
+    
+    <label>Stok Varian:</label>
+    <input class="form-control mb-2" name="varian_${varianIndex}_stok" type="number" required>
+
+    <div id="atribut-container-${varianIndex}">
+      <label>Atribut:</label><br>
+      <input class="form-control mb-2" name="varian_${varianIndex}_atribut_0_nama" placeholder="Contoh: RAM">
+      <input class="form-control mb-2" name="varian_${varianIndex}_atribut_0_nilai" placeholder="Contoh: 8GB">
+    </div>
+    <button type="button" class="btn btn-sm btn-outline-light" onclick="tambahAtribut(${varianIndex})">+ Tambah Atribut</button>
+  `;
+  container.appendChild(div);
+  varianIndex++;
+}
+
+function tambahAtribut(index) {
+  const kontainer = document.getElementById(`atribut-container-${index}`);
+  const jumlah = kontainer.querySelectorAll("input").length / 2;
+  const field = document.createElement("div");
+  field.innerHTML = `
+    <input class="form-control mb-2" name="varian_${index}_atribut_${jumlah}_nama" placeholder="Contoh: Warna">
+    <input class="form-control mb-2" name="varian_${index}_atribut_${jumlah}_nilai" placeholder="Contoh: Hitam">
+  `;
+  kontainer.appendChild(field);
+}
+</script>
+
 {%endblock%}
